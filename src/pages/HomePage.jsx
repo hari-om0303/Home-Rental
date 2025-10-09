@@ -10,7 +10,6 @@ const HomePage = () => {
       <Navbar/>
       <Slide/>
       <Categories/>
-
    </>
   )
 }
