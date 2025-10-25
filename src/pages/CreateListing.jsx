@@ -76,7 +76,6 @@ const CreateListing = () => {
 
     const [category , setCategory] = useState("")
     const [type , setType]  = useState("")
-    const [amenities , setAmenities] = useState([])
 
     // this is for location section
     const [formLocation , setFormLocation] = useState({
@@ -95,7 +94,24 @@ const CreateListing = () => {
         }) 
     }
 
-    console.log(formLocation)
+    // console.log(formLocation)
+
+    // BASIC COUNTS
+    const [guestCount , setGuestCount ] = useState(1)
+    const [bedroomCount , setBedroomCount ] = useState(1)
+    const [bedCount , setBedCount ] = useState(1)
+    const [bathroomCount , setBathroomCount ] = useState(1)
+
+    // AMENITIES 
+    const [amenities , setAmenities] = useState([])
+
+    const handleSelectAmenities = (facility) => {
+        if(amenities.includes(facility)){
+            setAmenities(prevAmenities => prevAmenities.filter((option) => option !== facility))
+        } else {
+            setAmenities(prev => [...prev, facility])
+        }
+    }
 
     //  UPLOAD , DRAG AND DROP REMOVE PHOTOS
 
@@ -117,9 +133,27 @@ const CreateListing = () => {
     }
 
     const handleRemovePhoto = (indexToRemove) => {
-        setPhotos((prevPhotos) => prevPhotos.filter((_, index) => index != indexToRemove))
+        setPhotos((prevPhotos) => prevPhotos.filter((_, index) => index !== indexToRemove))
     }
 
+    // Description
+    const [formDescription, setFormDescription] = useState({
+        title:"",
+        description:"",
+        highlight:"",
+        highlightDesc:"",
+        price:""
+    })
+
+    const handleChangeDescription = (e) => {
+         const {name , value } =e.target
+         setFormDescription({
+            ...formDescription,
+            [name]: value
+         })
+    }
+
+    console.log(formDescription)
     return (
         <>
             <Navbar />
@@ -196,36 +230,36 @@ const CreateListing = () => {
                             <div className="basic">
                                 <p>Guests</p>
                                 <div className="basic_count">
-                                    <RemoveCircleOutline sx={{ fontSize: "25px", cursor: "pointer", "&:hover": { color: variables.pinkred } }}></RemoveCircleOutline>
-                                    <p>1</p>
-                                    <AddCircleOutline sx={{ fontSize: "25px", cursor: "pointer", "&:hover": { color: variables.pinkred } }}></AddCircleOutline>
+                                    <RemoveCircleOutline onClick={()=>{guestCount>1 && setGuestCount(guestCount-1)}} sx={{ fontSize: "25px", cursor: "pointer", "&:hover": { color: variables.pinkred } }}></RemoveCircleOutline>
+                                    <p>{guestCount}</p>
+                                    <AddCircleOutline onClick={()=>{setGuestCount(guestCount+1)}} sx={{ fontSize: "25px", cursor: "pointer", "&:hover": { color: variables.pinkred } }}></AddCircleOutline>
                                 </div>
                             </div>
 
                             <div className="basic">
                                 <p>Bedrooms</p>
                                 <div className="basic_count">
-                                    <RemoveCircleOutline sx={{ fontSize: "25px", cursor: "pointer", "&:hover": { color: variables.pinkred } }}></RemoveCircleOutline>
-                                    <p>1</p>
-                                    <AddCircleOutline sx={{ fontSize: "25px", cursor: "pointer", "&:hover": { color: variables.pinkred } }}></AddCircleOutline>
+                                    <RemoveCircleOutline onClick={()=>{ setBedroomCount(bedroomCount-1)}} sx={{ fontSize: "25px", cursor: "pointer", "&:hover": { color: variables.pinkred } }}></RemoveCircleOutline>
+                                    <p>{bedroomCount}</p>
+                                    <AddCircleOutline onClick={()=>{setBedroomCount(bedroomCount+1)}} sx={{ fontSize: "25px", cursor: "pointer", "&:hover": { color: variables.pinkred } }}></AddCircleOutline>
                                 </div>
                             </div>
 
                             <div className="basic">
                                 <p>Beds</p>
                                 <div className="basic_count">
-                                    <RemoveCircleOutline sx={{ fontSize: "25px", cursor: "pointer", "&:hover": { color: variables.pinkred } }}></RemoveCircleOutline>
-                                    <p>1</p>
-                                    <AddCircleOutline sx={{ fontSize: "25px", cursor: "pointer", "&:hover": { color: variables.pinkred } }}></AddCircleOutline>
+                                    <RemoveCircleOutline  onClick={()=>{ setBedCount(bedCount-1)}} sx={{ fontSize: "25px", cursor: "pointer", "&:hover": { color: variables.pinkred } }}></RemoveCircleOutline>
+                                    <p>{bedCount}</p>
+                                    <AddCircleOutline  onClick={()=>{setBedCount(bedCount+1)}} sx={{ fontSize: "25px", cursor: "pointer", "&:hover": { color: variables.pinkred } }}></AddCircleOutline>
                                 </div>
                             </div>
 
                             <div className="basic">
                                 <p>Bathrooms</p>
                                 <div className="basic_count">
-                                    <RemoveCircleOutline sx={{ fontSize: "25px", cursor: "pointer", "&:hover": { color: variables.pinkred } }}></RemoveCircleOutline>
-                                    <p>1</p>
-                                    <AddCircleOutline sx={{ fontSize: "25px", cursor: "pointer", "&:hover": { color: variables.pinkred } }}></AddCircleOutline>
+                                    <RemoveCircleOutline  onClick={()=>{ bathroomCount>1 && setBathroomCount(bathroomCount-1)}} sx={{ fontSize: "25px", cursor: "pointer", "&:hover": { color: variables.pinkred } }}></RemoveCircleOutline>
+                                    <p>{bathroomCount}</p>
+                                    <AddCircleOutline  onClick={()=>{setBathroomCount(bathroomCount+1)}} sx={{ fontSize: "25px", cursor: "pointer", "&:hover": { color: variables.pinkred } }}></AddCircleOutline>
                                 </div>
                             </div>
                         </div>
@@ -238,7 +272,7 @@ const CreateListing = () => {
                         <h3>Tell guests what your place has to offer</h3>
                         <div className="amenities">
                             {facilities?.map((item, index) => (
-                                <div className="facility" key={index}>
+                                <div className={`facility ${amenities.includes(item) ? "selected" : ""}`} key={index} onClick={() => handleSelectAmenities(item)} >
                                     <div className="facility icon">{item.icon}
                                         <p>{item.name}</p>
                                     </div>
@@ -290,16 +324,16 @@ const CreateListing = () => {
                        <h3>What Make Your Place Attractive and exciting </h3>
                        <div className="description">
                         <p>Title</p>
-                        <input type="text" placeholder="Title" name="title" required/>
+                        <input type="text" placeholder="Title" name="title" value={formDescription.title}  onChange={handleChangeDescription} required/>
                         <p>Description</p>
-                        <textarea type="text" placeholder="Description" name="description" required/>
+                        <textarea type="text" placeholder="Description" name="description" value={formDescription.description} onChange={handleChangeDescription} required/>
                         <p>Highlights</p>
-                        <input type="text" placeholder="Highlights" name="highlights" required/>
+                        <input type="text" placeholder="Highlight" name="highlight" value={formDescription.highlight} onChange={handleChangeDescription} required/>
                         <p>Highlights details</p>
-                        <textarea type="text" placeholder="Highlights details" name="highlightDesc" required/>
+                        <textarea type="text" placeholder="Highlights details" name="highlightDesc" value={formDescription.highlightDesc} onChange={handleChangeDescription} required/>
                         <p>Now, set your PRICE</p>
                         <span>$</span>
-                        <input type="number" name="price" placeholder="500" className="price" required />
+                        <input type="number" name="price" placeholder="500" className="price" value={formDescription.price} onChange={handleChangeDescription} required />
                         </div>
                     </div>
                 </form>
