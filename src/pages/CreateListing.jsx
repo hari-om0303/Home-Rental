@@ -71,6 +71,8 @@ import { IoIosImages } from "react-icons/io"
 import variables from "../styles/variables.scss"
 import { useState } from "react";
 import { BiTrash } from "react-icons/bi";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const CreateListing = () => {
 
@@ -112,6 +114,7 @@ const CreateListing = () => {
             setAmenities(prev => [...prev, facility])
         }
     }
+    // console.log(amenities)
 
     //  UPLOAD , DRAG AND DROP REMOVE PHOTOS
 
@@ -153,13 +156,62 @@ const CreateListing = () => {
          })
     }
 
-    console.log(formDescription)
+    const creatorId = useSelector((state)=> state.user._id)
+    
+    const navigate = useNavigate()
+
+    const handlePost = async(e)=> {
+        e.preventDefault()
+
+        try{
+        //  create a new formdata object to handle file uploads
+        const listingForm = new FormData()
+        listingForm.append("creator", creatorId)
+        listingForm.append("category", category)
+        listingForm.append("type", type)
+        listingForm.append("streetAddress", formLocation.streetAddress)
+        listingForm.append("aptSuite", formLocation.aptSuite)
+        listingForm.append("city", formLocation.city)
+        listingForm.append("province", formLocation.province)
+        listingForm.append("country", formLocation.country)
+        listingForm.append("guestCount", guestCount)
+        listingForm.append("bedroomCount", bedroomCount)
+        listingForm.append("bedCount", bedCount)
+        listingForm.append("bathroomCount", bathroomCount)
+        listingForm.append("amenities", amenities)
+        listingForm.append("title", formDescription.title)
+        listingForm.append("description", formDescription.description)
+        listingForm.append("highlight", formDescription.highlight)
+        listingForm.append("highlightDesc", formDescription.highlightDesc)
+        listingForm.append("price", formDescription.price)
+
+        // append each selected photos to the fromData object
+        photos.forEach((photo) => {
+            listingForm.append("listingPhotos", photo)
+        })
+
+                              // I used here listing on the place of properties
+        const response = await fetch("http://localhost:3001/listing/create", { 
+            method: "POST",
+            body: listingForm
+        })
+
+        if (response.ok) {
+            navigate("/")
+        }
+
+    }catch(err){
+        console.error( "publish Listing failed", err.message)
+    }
+}
+
+
     return (
         <>
             <Navbar />
             <div className="create-listing">
                 <h1>Publish Your Place</h1>
-                <form>
+                <form onSubmit={handlePost} >
                     <div className="create-listing_step1">
                         <h2>Step 1: Tell us about your place</h2>
                         <hr />
@@ -272,7 +324,7 @@ const CreateListing = () => {
                         <h3>Tell guests what your place has to offer</h3>
                         <div className="amenities">
                             {facilities?.map((item, index) => (
-                                <div className={`facility ${amenities.includes(item) ? "selected" : ""}`} key={index} onClick={() => handleSelectAmenities(item)} >
+                                <div className={`facility ${amenities.includes(item.name) ? "selected" : ""}`} key={index} onClick={() => handleSelectAmenities(item.name)} >
                                     <div className="facility icon">{item.icon}
                                         <p>{item.name}</p>
                                     </div>
@@ -336,6 +388,7 @@ const CreateListing = () => {
                         <input type="number" name="price" placeholder="500" className="price" value={formDescription.price} onChange={handleChangeDescription} required />
                         </div>
                     </div>
+                    <button className="submit_btn" type="submit">CREATE YOUR LISTINGS</button>
                 </form>
             </div>
         </>
