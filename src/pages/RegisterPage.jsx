@@ -116,7 +116,7 @@ const RegisterPage = () => {
     const { name, value, files } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      // [name]: value,
       [name]: name === "profileImage" ? files[0] : value,
     });
   };
@@ -143,10 +143,7 @@ const RegisterPage = () => {
       const response = await fetch("http://localhost:3001/auth/register", {
         method: "POST",
         body: register_form,
-        // headers: {
-        //   "Content-Type": "application/json"
-        // },
-        // body: JSON.stringify(data)
+       
       })
 
       if (response.ok) {
